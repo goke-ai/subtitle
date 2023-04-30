@@ -48,8 +48,8 @@ namespace gsubtitle
 
     void convertSRT2VTT(std::string fname);
 
-    void modifyVTTTime(std::string fname);
+    void modifyVTTTime(std::string fname, double addSecs);
 
-    void modifySRTTime(std::string fname);
+    void modifySRTTime(std::string fname, double addSecs);
 
 } // namespace gsubtitle
