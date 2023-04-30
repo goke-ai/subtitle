@@ -319,13 +319,12 @@ namespace gsubtitle
         writeVTT(lines);
     }
 
-    void modifyVTTTime(std::string fname)
+    void modifyVTTTime(std::string fname, double addSecs)
     {
         // read vtt file
         auto lines = readVTT(fname);
 
         // convert
-        auto addSecs = 0.0;
 
         for (auto &&l : lines)
         {
@@ -351,14 +350,12 @@ namespace gsubtitle
         writeVTT(lines);
     }
 
-    void modifySRTTime(std::string fname)
+    void modifySRTTime(std::string fname, double addSecs)
     {
         // read vtt file
         auto lines = readSRT(fname);
 
         // convert
-        auto addSecs = 0.0;
-
         for (auto &&l : lines)
         {
             auto timeline = l.find("-->") != std::string::npos;
