@@ -1,0 +1,68 @@
+{
+    "version": "2.0.0",
+    "configurations": [
+        {
+            "name": "(MacOS) build and debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/bin/debug/osx/${workspaceFolderBasename}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "lldb",
+            "preLaunchTask": "C/C++: clang++ build and debug"
+        },
+        {
+            "name": "(Linux) build and debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/bin/debug/linux/${workspaceFolderBasename}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "C/C++: g++ build and debug"
+        },
+        {
+            "name": "(Windows) build and debug",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/debug/wnd/${workspaceFolderBasename}.exe",
+            // "program": "main.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "console": "externalTerminal",
+            "preLaunchTask": "C/C++: cl.exe build debug"
+        },
+    ],
+    "compounds": [
+        {
+            "name": "(Linux) debug",
+            "configurations": [
+                // "Folder",
+                "(Linux) build and debug"
+            ],
+            "preLaunchTask": "(Linux) Folder",
+            "stopAll": true
+        }
+    ]
+}

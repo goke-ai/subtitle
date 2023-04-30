@@ -1,0 +1,213 @@
+{
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "cmd.exe",
+                "args": [
+                    "/C",
+                    "\"C:/Program Files/Microsoft Visual Studio/2022/Enterprise/Common7/Tools/VsDevCmd.bat\"",
+                    "&&"
+                ]
+            }
+        }
+    },
+    "tasks": [
+        {
+            "label": "Clean",
+            "type": "shell",
+            "linux": {
+                // "command": ".\\scripts\\test.cmd"
+                "command": "rm",
+                "args": [
+                    "-rf",
+                    "${workspaceFolder}/bin/debug/linux",
+                ],
+            },
+            "osx": {
+                // "command": ".\\scripts\\test.cmd"
+                "command": "rm",
+                "args": [
+                    "-rf",
+                    "${workspaceFolder}/bin/debug/osx",
+                ],
+            },
+            "windows": {
+                // "command": ".\\scripts\\test.cmd"
+                "command": "",
+                "args": [
+                    "if",
+                    "exist",
+                    "${workspaceFolder}\\bin\\debug\\wnd",
+                    "(",
+                    "rmdir",
+                    "/s",
+                    "/q",
+                    "${workspaceFolder}\\bin\\debug\\wnd",
+                    ")",
+                ],
+            },
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "Create",
+            "type": "shell",
+            "linux": {
+                // "command": ".\\scripts\\test.cmd"
+                "command": "mkdir",
+                "args": [
+                    "-p",
+                    "${workspaceFolder}/bin/debug/linux"
+                ],
+            },
+            "osx": {
+                // "command": ".\\scripts\\test.cmd"
+                "command": "mkdir",
+                "args": [
+                    "-p",
+                    "${workspaceFolder}/bin/debug/osx"
+                ],
+            },
+            "windows": {
+                // "command": ".\\scripts\\test.cmd"
+                "command": "mkdir",
+                "args": [
+                    "${workspaceFolder}\\bin\\debug\\wnd\\objs"
+                ],
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: clang++ build and debug",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-fcolor-diagnostics",
+                "-fansi-escape-codes",
+                "-std=c++20",
+                "-stdlib=libc++",
+                // "-v",
+                "-I",
+                "/Users/goke/Library/CloudStorage/OneDrive-Personal/zs/core/cpp/CPPConsoleApp/include", // external include/header
+                "-g",
+                // cpp files
+                "/Users/goke/Library/CloudStorage/OneDrive-Personal/zs/core/cpp/CPPConsoleApp/src/**.cpp", // external cpp from include/header
+                // all cpp
+                "$(find",
+                ".",
+                "-type",
+                "f",
+                "-iregex",
+                "'.*\\.cpp')",
+                // "${workspaceFolder}/models/*.cpp", // local subfolders
+                // "${workspaceFolder}/*.cpp", // root folder
+                // output
+                "-o",
+                "${workspaceFolder}/bin/debug/osx/${workspaceFolderBasename}"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Clean",
+                "Create"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "compiler: /usr/bin/clang++"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++ build and debug",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-std=c++20",
+                "-I",
+                "/mnt/c/Users/gokel/OneDrive/zs/core/cpp/CPPConsoleApp/include", // external include/header
+                "-g",
+                // cpp source files
+                "/mnt/c/Users/gokel/OneDrive/zs/core/cpp/CPPConsoleApp/src/**.cpp", // external cpp from include/header
+                // all local cpp 
+                // "${workspaceFolder}/models/*.cpp", // local subfolders
+                "${workspaceFolder}/*.cpp", // root folder
+                // "$(find",
+                // ".",
+                // "-type",
+                // "f",
+                // "-iregex",
+                // "'.*\\.cpp')",
+                // output
+                "-o",
+                "${workspaceFolder}/bin/debug/linux/${workspaceFolderBasename}"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Clean",
+                "Create"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "compiler: /usr/bin/g++"
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: cl.exe build debug",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++20", // "/std:c++latest",
+                "/Zi",
+                "/Fo${workspaceFolder}\\bin\\debug\\wnd\\objs\\",
+                // "/Fo${workspaceFolder}\\bin\\debug\\wnd\\objs\\",
+                "/EHsc",
+                "/IC:/Users/gokel/OneDrive/zs/core/cpp/CPPConsoleApp/include", // external include/header
+                // "/c",
+                // cpp source files
+                "C:/Users/gokel/OneDrive/zs/core/cpp/CPPConsoleApp/src/**.cpp", // external cpp from include/header
+                // "${workspaceFolder}/models/*.cpp", // local subfolders
+                "${workspaceFolder}/*.cpp", // root folder
+                // output
+                "/Fe:",
+                "${workspaceFolder}\\bin\\debug\\wnd\\${workspaceFolderBasename}.exe"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Clean",
+                "Create"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "compiler: cl.exe"
+        }
+    ],
+    "version": "2.0.0"
+}
