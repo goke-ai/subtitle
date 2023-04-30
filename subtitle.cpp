@@ -1,5 +1,4 @@
-#ifndef __SUBTITLE_H__
-#define __SUBTITLE_H__
+
 
 #include <iostream>
 #include <fstream>
@@ -385,5 +384,3 @@ namespace gsubtitle
     }
 
 } // namespace gsubtitle
-
-#endif // __SUBTITLE_H__
