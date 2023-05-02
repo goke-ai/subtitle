@@ -4,10 +4,13 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <filesystem>
 
 #include "gstring.h"
-
+#include "utilities.h"
 #include "subtitle.h"
+
+namespace fs = std::filesystem;
 
 namespace gsubtitle
 {
@@ -159,6 +162,9 @@ namespace gsubtitle
 
     std::vector<std::string> readVTT(std::string fname)
     {
+        if (!gcore::is_extension(fname, ".vtt"))
+            return {};
+
         std::vector<std::string> lines;
         std::string line;
         std::ifstream vttfile(fname);
@@ -191,6 +197,9 @@ namespace gsubtitle
 
     std::vector<std::string> readSRT(std::string fname)
     {
+        if (!gcore::is_extension(fname, ".srt"))
+            return {};
+
         std::vector<std::string> lines;
         std::string line;
         std::ifstream srtfile(fname);
@@ -257,11 +266,17 @@ namespace gsubtitle
 
     bool writeSRT(std::vector<std::string> lines, std::string fname)
     {
+        if (!gcore::is_extension(fname, ".srt"))
+            return false;
+
         return write(lines, fname);
     }
 
     bool writeVTT(std::vector<std::string> lines, std::string fname)
     {
+        if (!gcore::is_extension(fname, ".vtt"))
+            return false;
+
         return write(lines, fname);
     }
 
@@ -271,25 +286,42 @@ namespace gsubtitle
         auto lines = readVTT(fname);
 
         // convert
-        for (auto &&l : lines)
-        {
-            auto timeline = l.find("-->") != std::string::npos;
-            if (timeline)
-            {
-                std::cout << l;
-
-                // check if srt time interval line
-                auto tokens = gcore::split(l, "-->");
-
-                //
-                l = VTT2SRT(tokens[0]) + " --> " + VTT2SRT(tokens[1]);
-
-                std::cout << " \t" << l << std::endl;
-            }
-        }
+        convert(lines,
+                [](auto tokens)
+                {
+                    return VTT2SRT(tokens[0]) + " --> " + VTT2SRT(tokens[1]);
+                });
 
         // write new srt file
-        writeSRT(lines);
+        auto new_fname = gcore::change_extension(fname, ".srt");
+        writeSRT(lines, new_fname);
+    }
+
+    void convertAllVTT2SRT(std::string folder_path)
+    {
+        const std::filesystem::path fpath{folder_path};
+
+        for (const auto &file : fs::directory_iterator(fpath))
+        {
+            if (file.is_regular_file())
+            {
+                auto fname = file.path().string();
+
+                // read vtt file
+                auto lines = readVTT(fname);
+
+                // convert
+                convert(lines,
+                        [](auto tokens)
+                        {
+                            return VTT2SRT(tokens[0]) + " --> " + VTT2SRT(tokens[1]);
+                        });
+
+                // write new srt file
+                auto new_fname = gcore::change_extension(fname, ".srt");
+                writeSRT(lines, new_fname);
+            }
+        }
     }
 
     void convertSRT2VTT(std::string fname)
@@ -298,25 +330,42 @@ namespace gsubtitle
         auto lines = readSRT(fname);
 
         // convert
-        for (auto &&l : lines)
-        {
-            auto timeline = l.find("-->") != std::string::npos;
-            if (timeline)
-            {
-                std::cout << l;
-
-                // check if srt time interval line
-                auto tokens = gcore::split(l, "-->");
-
-                //
-                l = SRT2VTT(tokens[0]) + " --> " + SRT2VTT(tokens[1]);
-
-                std::cout << " \t" << l << std::endl;
-            }
-        }
+        convert(lines,
+                [](auto tokens)
+                {
+                    return SRT2VTT(tokens[0]) + " --> " + SRT2VTT(tokens[1]);
+                });
 
         // write new srt file
-        writeVTT(lines);
+        auto new_fname = gcore::change_extension(fname, ".vtt");
+        writeVTT(lines, new_fname);
+    }
+
+    void convertAllSRT2VTT(std::string folder_path)
+    {
+        const std::filesystem::path fpath{folder_path};
+
+        for (const auto &file : fs::directory_iterator(fpath))
+        {
+            if (file.is_regular_file())
+            {
+                auto fname = file.path().string();
+
+                // read vtt file
+                auto lines = readSRT(fname);
+
+                // convert
+                convert(lines,
+                        [](auto tokens)
+                        {
+                            return SRT2VTT(tokens[0]) + " --> " + SRT2VTT(tokens[1]);
+                        });
+
+                // write new srt file
+                auto new_fname = gcore::change_extension(fname, ".vtt");
+                writeVTT(lines, new_fname);
+            }
+        }
     }
 
     void modifyVTTTime(std::string fname, double addSecs)
@@ -347,7 +396,8 @@ namespace gsubtitle
         }
 
         // write new srt file
-        writeVTT(lines);
+        auto new_fname = gcore::change_extension(fname, "2.vtt");
+        writeVTT(lines, new_fname);
     }
 
     void modifySRTTime(std::string fname, double addSecs)
@@ -377,7 +427,8 @@ namespace gsubtitle
         }
 
         // write new srt file
-        writeSRT(lines);
+        auto new_fname = gcore::change_extension(fname, "2.srt");
+        writeVTT(lines, new_fname);
     }
 
 } // namespace gsubtitle

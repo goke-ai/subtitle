@@ -44,9 +44,35 @@ namespace gsubtitle
 
     bool writeVTT(std::vector<std::string> lines, std::string fname = "example.vtt");
 
+    template <class T>
+    void convert(std::vector<std::string>& lines, T func)
+    {
+        // convert
+        for (auto &&l : lines)
+        {
+            auto timeline = l.find("-->") != std::string::npos;
+            if (timeline)
+            {
+                std::cout << l;
+
+                // check if srt time interval line
+                auto tokens = gcore::split(l, "-->");
+
+                //
+                l = func(tokens);
+
+                std::cout << " \t" << l << std::endl;
+            }
+        }
+    }
+
     void convertVTT2SRT(std::string fname);
 
+    void convertAllVTT2SRT(std::string folder);
+
     void convertSRT2VTT(std::string fname);
+
+    void convertAllSRT2VTT(std::string folder_path);
 
     void modifyVTTTime(std::string fname, double addSecs);
 
